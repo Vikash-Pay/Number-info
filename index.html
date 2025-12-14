@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Number Information Lookup</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-phone-alt"></i>
+                <h1>Phone Information Lookup</h1>
+            </div>
+            <p class="tagline">Check phone number details instantly</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="card">
+                    <h2><i class="fas fa-search"></i> Search Phone Number</h2>
+                    <p class="instruction">Enter a 10-digit Indian mobile number to get information</p>
+                    
+                    <div class="input-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                            <input 
+                                type="text" 
+                                id="phoneInput" 
+                                placeholder="Enter 10-digit mobile number" 
+                                maxlength="10"
+                                pattern="\d{10}"
+                            >
+                        </div>
+                        <button id="searchBtn" class="btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    
+                    <div class="hint">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Example: 9876543210 (without +91)</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="card">
+                    <div class="results-header">
+                        <h2><i class="fas fa-file-alt"></i> Search Results</h2>
+                        <div class="api-info">
+                            <span class="api-status" id="apiStatus">
+                                <i class="fas fa-circle"></i> API Ready
+                            </span>
+                            <button id="clearBtn" class="btn-secondary">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading -->
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Fetching information...</p>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div class="error-message" id="errorMessage" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3 id="errorTitle">Error Occurred</h3>
+                        <p id="errorText">Could not fetch data. Please try again.</p>
+                        <button id="retryBtn" class="btn-secondary">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+
+                    <!-- No Data Message -->
+                    <div class="no-data" id="noDataMessage" style="display: none;">
+                        <i class="fas fa-search-minus"></i>
+                        <h3>No Information Found</h3>
+                        <p id="noDataText">We couldn't find any information for this number.</p>
+                        <div class="suggestions">
+                            <p><strong>Possible reasons:</strong></p>
+                            <ul>
+                                <li>Number may not be registered</li>
+                                <li>Number may be too new</li>
+                                <li>Database may not have this number</li>
+                                <li>Number may be from a different circle</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- API Info -->
+                    <div class="api-details" id="apiDetails" style="display: none;">
+                        <h3><i class="fas fa-info-circle"></i> Search Details</h3>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Number Searched:</span>
+                                <span class="detail-value" id="searchNumber">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Data Source:</span>
+                                <span class="detail-value" id="dataSource">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Records Found:</span>
+                                <span class="detail-value" id="recordsFound">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Timestamp:</span>
+                                <span class="detail-value" id="timestamp">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Records Container -->
+                    <div class="records-container" id="recordsContainer"></div>
+
+                    <!-- JSON View -->
+                    <div class="json-view" id="jsonView" style="display: none;">
+                        <div class="json-header">
+                            <h3><i class="fas fa-code"></i> Raw JSON Response</h3>
+                            <button id="toggleJsonBtn" class="btn-small">
+                                <i class="fas fa-eye"></i> Show
+                            </button>
+                        </div>
+                        <div class="json-content" id="jsonContent" style="display: none;">
+                            <pre id="jsonOutput"></pre>
+                            <div class="json-actions">
+                                <button id="copyJsonBtn" class="btn-small">
+                                    <i class="fas fa-copy"></i> Copy JSON
+                                </button>
+                                <button id="downloadJsonBtn" class="btn-small">
+                                    <i class="fas fa-download"></i> Download JSON
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Instructions Section -->
+            <section class="instructions-section">
+                <div class="card">
+                    <h2><i class="fas fa-question-circle"></i> How to Use</h2>
+                    <div class="instructions-grid">
+                        <div class="instruction-step">
+                            <div class="step-number">1</div>
+                            <h3>Enter Number</h3>
+                            <p>Type any valid 10-digit Indian mobile number in the search box.</p>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">2</div>
+                            <h3>Click Search</h3>
+                            <p>Press the search button to fetch information from the API.</p>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">3</div>
+                            <h3>View Results</h3>
+                            <p>See detailed information including name, address, and more.</p>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">4</div>
+                            <h3>Download Data</h3>
+                            <p>Copy or download the JSON data for your records.</p>
+                        </div>
+                    </div>
+
+                    <div class="disclaimer">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Disclaimer</h3>
+                        <p>This tool is for informational purposes only. Use the information responsibly and ethically. We do not store any search data.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p><i class="fas fa-code"></i> Built with HTML, CSS & JavaScript</p>
+                    <p><i class="fas fa-cloud"></i> API: Niloy Number Info API</p>
+                    <p><i class="fas fa-server"></i> Hosted on Vercel</p>
+                </div>
+                <div class="footer-credits">
+                    <p>© 2024 Phone Information Lookup Tool</p>
+                    <p class="version">Version 1.0.0</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
